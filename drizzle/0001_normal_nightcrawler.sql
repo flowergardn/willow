@@ -1,0 +1,1 @@
+ALTER TABLE "willow_time_entry" ADD PRIMARY KEY ("id");

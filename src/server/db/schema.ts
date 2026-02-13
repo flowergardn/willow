@@ -10,7 +10,7 @@ import {
 export const createTable = pgTableCreator((name) => `willow_${name}`);
 
 export const timeEntry = createTable("time_entry", {
-  id: serial("id"),
+  id: serial("id").primaryKey(),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -37,6 +37,7 @@ export const user = createTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  linearApiKey: text("linear_api_key"),
   createdAt: timestamp("created_at")
     .$defaultFn(() => new Date())
     .notNull(),

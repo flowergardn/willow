@@ -8,6 +8,20 @@
       "when": 1770869848736,
       "tag": "0000_round_tusk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770947070247,
+      "tag": "0001_normal_nightcrawler",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770947488388,
+      "tag": "0002_happy_imperial_guard",
+      "breakpoints": true
     }
   ]
 }

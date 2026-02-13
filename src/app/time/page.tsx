@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
@@ -9,6 +9,7 @@ import { getActiveTimer } from "./actions";
 import { ActiveTimer } from "./components/active-timer";
 import { StartTimer } from "./components/start-timer";
 import TimeEntry from "./components/time-entry";
+import { LinearClient } from "@linear/sdk";
 
 export default async function TimeDashboard() {
   const session = await getSession();
@@ -19,7 +20,29 @@ export default async function TimeDashboard() {
     .from(timeEntry)
     .where(
       and(eq(timeEntry.userId, session.user.id), isNotNull(timeEntry.endedAt)),
-    );
+    )
+    .orderBy(desc(timeEntry.endedAt));
+
+  const linearClient = session.user.linearApiKey
+    ? new LinearClient({ apiKey: session.user.linearApiKey })
+    : null;
+
+  const enrichedEntries = await Promise.all(
+    entries.map(async (entry) => {
+      if (!linearClient || !entry.linearTaskId) return entry;
+
+      try {
+        const issue = await linearClient.issue(entry.linearTaskId);
+        return { ...entry, linearTaskUrl: issue.url };
+      } catch (error) {
+        console.error(
+          `Failed to fetch Linear task ${entry.linearTaskId}:`,
+          error,
+        );
+        return entry;
+      }
+    }),
+  );
 
   const activeTimer = await getActiveTimer();
 
@@ -38,11 +61,10 @@ export default async function TimeDashboard() {
       <div className="space-y-3">
         <h2 className="text-muted-foreground mb-4 text-sm">recent entries</h2>
 
-        {entries.map((entry) => (
+        {enrichedEntries.map((entry) => (
           <TimeEntry entry={entry} key={entry.id} />
         ))}
-
-        {entries.length === 0 && (
+        {enrichedEntries.length === 0 && (
           <p className="text-muted-foreground py-8 text-center text-sm">
             no entries yet. start tracking your time above.
           </p>

@@ -1,0 +1,1 @@
+ALTER TABLE "willow_user" ADD COLUMN "linear_api_key" text;

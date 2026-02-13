@@ -12,12 +12,16 @@ dayjs.extend(relativeTime);
 
 const TIME_FORMAT = "MMM D, h:mm:ss A";
 
+type TimeEntry = TimeEntryData & {
+  linearTaskUrl?: string;
+};
+
 function formatDuration(start: Date, end: Date): string {
   const ms = end.getTime() - start.getTime();
-  return prettyMilliseconds(ms, { hideSeconds: true, verbose: true });
+  return prettyMilliseconds(ms, { verbose: true, unitCount: 2 });
 }
 
-export default function TimeEntry({ entry }: { entry: TimeEntryData }) {
+export default function TimeEntry({ entry }: { entry: TimeEntry }) {
   const startedAt = dayjs(entry.startedAt).format(TIME_FORMAT);
   const endedAt = dayjs(entry.endedAt).format(TIME_FORMAT);
 
@@ -29,6 +33,11 @@ export default function TimeEntry({ entry }: { entry: TimeEntryData }) {
           <p className="text-muted-foreground mt-1 text-xs">
             {startedAt} - {endedAt}
           </p>
+          {entry.linearTaskUrl && (
+            <p className="text-muted-foreground mt-1 text-xs hover:underline">
+              <a href={entry.linearTaskUrl}>View on Linear</a>
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium">
