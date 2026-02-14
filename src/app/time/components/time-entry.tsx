@@ -10,7 +10,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
-const TIME_FORMAT = "MMM D, h:mm:ss A";
+const TIME_FORMAT = "h:mm A";
 
 type TimeEntry = TimeEntryData & {
   linearTaskUrl?: string;
@@ -26,10 +26,13 @@ export default function TimeEntry({ entry }: { entry: TimeEntry }) {
   const endedAt = dayjs(entry.endedAt).format(TIME_FORMAT);
 
   return (
-    <Card key={entry.id} className="hover:bg-accent/50 p-4 transition-colors">
+    <Card
+      key={entry.id}
+      className="hover:bg-accent/50 mt-4 p-4 transition-colors"
+    >
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="font-light">{entry.description}</p>
+          <p>{entry.description}</p>
           <p className="text-muted-foreground mt-1 text-xs">
             {startedAt} - {endedAt}
           </p>
